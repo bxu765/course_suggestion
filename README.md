@@ -24,7 +24,8 @@ https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEAR
 * replace `{page}` with page number. if `0`, then `response['pageCount']` stores how many pages, otherwise it is `0`.
 
 ### hooslist api
-no documentation for this one, i found it through dev tools and looking at all network calls when using hooslist webpage.
+no documentation for this one, i found it through chrome dev tools and looking at all network calls when using hooslist webpage. (it will show up when clicking any specific section of any course in hooslist)
+![alt text](image.png)
 
 get course description:
 ```
