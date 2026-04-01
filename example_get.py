@@ -11,9 +11,6 @@ subjects=[s['subject'] for s in requests.get(subj_query).json()['subjects']]
 num_template='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1268&subject='
 desc_template='https://hooslist.virginia.edu/ClassSchedule/_GetCourseDescription?subject='
 
-# FOR TESTING
-subjects=['CS']
-
 # local storage of descs, probably redundant now i found the hooslist endpoint that works
 out={}
 for subject in subjects:
