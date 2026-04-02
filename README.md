@@ -45,12 +45,12 @@ https://hooslist.virginia.edu/ClassSchedule/_GetCourseDescription?subject={subje
 
 ### other (these require sis authentication, probably wont use these)
 
-sis retrieve transcript
+sis retrieve transcript (we can just have the user upload .pdf manually)
 ```
 https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_RE.H_VW_UNOFF_TRANSCR.FieldFormula.IScript_PrintTranscript?institution=UVA01&transcript_type=UNADV
 ```
 
-retrieve schedule
+retrieve schedule (we can just have the user upload .ics manually)
 ```
 https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_EN.H_SCHEDULE.FieldFormula.IScript_ScheduleByTerm?x_term=1262
 ```
