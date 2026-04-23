@@ -82,7 +82,7 @@ class CourseRecommenderGUI:
                  bg="#2196F3", fg="white", font=("Arial", 12, "bold"), padx=20, pady=10).pack(pady=15)
         
         # Results section
-        tk.Label(self.root, text="Recommended Courses:", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor=tk.W, padx=20, pady=(10, 5))
+        tk.Label(self.root, text="Top 5 Recommended Courses:", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor=tk.W, padx=20, pady=(10, 5))
         
         # Results display with scrollbar
         results_frame = tk.Frame(self.root, bg="white", relief=tk.SUNKEN, bd=1)
@@ -185,11 +185,6 @@ class CourseRecommenderGUI:
         self.results_text.config(state=tk.NORMAL)
         self.results_text.delete("1.0", tk.END)
         
-        # Header
-        header = f"Top 5 Courses Similar to: \"{interests}\"\n"
-        header += "=" * 100 + "\n\n"
-        self.results_text.insert(tk.END, header)
-        
         if not results:
             self.results_text.insert(tk.END, "No courses found. You may have already taken all similar courses!")
         else:
@@ -199,17 +194,34 @@ class CourseRecommenderGUI:
                 self.results_text.insert(tk.END, course_info, "course_id")
                 
                 # Similarity score
-                similarity_info = f"   Similarity Score: {result['similarity']:.4f}\n"
+                similarity_info = f"Similarity Score: {(result['similarity'] * 100):.2f}%\n"
                 self.results_text.insert(tk.END, similarity_info, "similarity")
                 
-                # Description
-                description = f"   {result['description']}\n\n"
-                self.results_text.insert(tk.END, description, "description")
+                # Parse description and prerequisites
+                description = result['description']
+                prerequisite = None
+                
+                if "Prerequisite" in description:
+                    parts = description.split("Prerequisite")
+                    description = parts[0].strip()
+                    prerequisite = parts[1].strip()
+                
+                # Display description
+                description_text = f"{description}\n"
+                self.results_text.insert(tk.END, description_text, "description")
+                
+                # Display prerequisite if it exists
+                if prerequisite:
+                    prerequisite_text = f"Prerequisite{prerequisite}\n"
+                    self.results_text.insert(tk.END, prerequisite_text, "prerequisite")
+                
+                self.results_text.insert(tk.END, "\n")
         
         # Configure tags for styling
-        self.results_text.tag_config("course_id", font=("Arial", 11, "bold"), foreground="#2196F3")
+        self.results_text.tag_config("course_id", font=("Arial", 12, "bold"), foreground="#2196F3")
         self.results_text.tag_config("similarity", font=("Arial", 10), foreground="#FF9800")
         self.results_text.tag_config("description", font=("Arial", 10), foreground="#333")
+        self.results_text.tag_config("prerequisite", font=("Arial", 10, "italic"), foreground="#666")
         
         self.results_text.config(state=tk.DISABLED)
 
