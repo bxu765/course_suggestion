@@ -8,12 +8,46 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
+# Detect platform and set appropriate colors
+IS_MAC = sys.platform == 'darwin'
+
+if IS_MAC:
+    # macOS-friendly colors that work with system appearance
+    BG_COLOR = "SystemWindowBackgroundColor"
+    LABEL_BG = "SystemWindowBackgroundColor"
+    TEXT_COLOR = "black"
+    BUTTON_BG = "#007AFF"  # macOS blue
+    BUTTON_FG = "white"
+    SUCCESS_COLOR = "#34C759"  # macOS green
+    TEXT_BG = "SystemWindowBackgroundColor"
+    TEXT_FG = "black"
+    STATUS_BG = "#E5E5EA"
+    STATUS_FG = "black"
+    LINK_COLOR = "#007AFF"
+    ACCENT_COLOR = "#FF9500"
+    SECONDARY_TEXT = "#555555"
+else:
+    # Windows/Linux colors
+    BG_COLOR = "#f0f0f0"
+    LABEL_BG = "#f0f0f0"
+    TEXT_COLOR = "black"
+    BUTTON_BG = "#4CAF50"
+    BUTTON_FG = "white"
+    SUCCESS_COLOR = "#4CAF50"
+    TEXT_BG = "white"
+    TEXT_FG = "black"
+    STATUS_BG = "#e0e0e0"
+    STATUS_FG = "#333"
+    LINK_COLOR = "#2196F3"
+    ACCENT_COLOR = "#FF9800"
+    SECONDARY_TEXT = "#666"
+
 class CourseRecommenderGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Course Recommender")
         self.root.geometry("900x700")
-        self.root.configure(bg="#f0f0f0")
+        self.root.configure(bg=BG_COLOR)
         
         # Load model and data once
         self.model = None
@@ -50,53 +84,53 @@ class CourseRecommenderGUI:
     def create_widgets(self):
         """Create GUI elements"""
         # Title
-        title = tk.Label(self.root, text="Course Recommender System", font=("Arial", 18, "bold"), bg="#f0f0f0")
+        title = tk.Label(self.root, text="Course Recommender System", font=("Arial", 18, "bold"), bg=LABEL_BG)
         title.pack(pady=10)
         
         # Frame for inputs
-        input_frame = tk.Frame(self.root, bg="#f0f0f0")
+        input_frame = tk.Frame(self.root, bg=BG_COLOR)
         input_frame.pack(fill=tk.BOTH, padx=20, pady=10)
         
         # Interests section
-        tk.Label(input_frame, text="Enter Your Interests:", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor=tk.W)
+        tk.Label(input_frame, text="Enter Your Interests:", font=("Arial", 12, "bold"), bg=LABEL_BG).pack(anchor=tk.W)
         self.interests_text = tk.Text(input_frame, height=4, width=50, font=("Arial", 10), wrap=tk.WORD)
         self.interests_text.pack(fill=tk.BOTH, pady=5)
         
         # Transcript upload section
-        tk.Label(input_frame, text="Upload Transcript (Optional):", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor=tk.W, pady=(15, 0))
+        tk.Label(input_frame, text="Upload Transcript (Optional):", font=("Arial", 12, "bold"), bg=LABEL_BG).pack(anchor=tk.W, pady=(15, 0))
         
-        transcript_button_frame = tk.Frame(input_frame, bg="#f0f0f0")
+        transcript_button_frame = tk.Frame(input_frame, bg=BG_COLOR)
         transcript_button_frame.pack(anchor=tk.W, pady=5)
         
         tk.Button(transcript_button_frame, text="Select PDF", command=self.upload_transcript, 
-                 bg="#4CAF50", fg="white", font=("Arial", 10), padx=10).pack(side=tk.LEFT, padx=5)
+                 bg=BUTTON_BG, fg=BUTTON_FG, font=("Arial", 10), padx=10).pack(side=tk.LEFT, padx=5)
         
         self.transcript_label = tk.Label(transcript_button_frame, text="No file selected", 
-                                        font=("Arial", 10), bg="#f0f0f0", fg="#666")
+                                        font=("Arial", 10), bg=LABEL_BG, fg=SECONDARY_TEXT)
         self.transcript_label.pack(side=tk.LEFT, padx=10)
         
         self.transcript_path = None
         
         # Button to find courses
         tk.Button(self.root, text="Find Similar Courses", command=self.find_courses,
-                 bg="#2196F3", fg="white", font=("Arial", 12, "bold"), padx=20, pady=10).pack(pady=15)
+                 bg=LINK_COLOR, fg=BUTTON_FG, font=("Arial", 12, "bold"), padx=20, pady=10).pack(pady=15)
         
         # Results section
-        tk.Label(self.root, text="Top 5 Recommended Courses:", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor=tk.W, padx=20, pady=(10, 5))
+        tk.Label(self.root, text="Top 5 Recommended Courses:", font=("Arial", 12, "bold"), bg=LABEL_BG).pack(anchor=tk.W, padx=20, pady=(10, 5))
         
         # Results display with scrollbar
-        results_frame = tk.Frame(self.root, bg="white", relief=tk.SUNKEN, bd=1)
+        results_frame = tk.Frame(self.root, bg=TEXT_BG, relief=tk.SUNKEN, bd=1)
         results_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
         
         self.results_text = scrolledtext.ScrolledText(results_frame, height=15, width=100, 
-                                                     font=("Arial", 10), wrap=tk.WORD)
+                                                     font=("Arial", 10), wrap=tk.WORD, bg=TEXT_BG, fg=TEXT_FG)
         self.results_text.pack(fill=tk.BOTH, expand=True)
         self.results_text.config(state=tk.DISABLED)
         
         # Status bar
         self.status_var = tk.StringVar(value="Ready")
         status_bar = tk.Label(self.root, textvariable=self.status_var, font=("Arial", 9), 
-                             bg="#e0e0e0", fg="#333", anchor=tk.W)
+                             bg=STATUS_BG, fg=STATUS_FG, anchor=tk.W)
         status_bar.pack(fill=tk.X, padx=0, pady=0)
     
     def upload_transcript(self):
@@ -109,7 +143,7 @@ class CourseRecommenderGUI:
         if file_path:
             self.transcript_path = file_path
             filename = os.path.basename(file_path)
-            self.transcript_label.config(text=f"Selected: {filename}", fg="#4CAF50")
+            self.transcript_label.config(text=f"Selected: {filename}", fg=SUCCESS_COLOR)
             self.status_var.set(f"Processing transcript: {filename}")
             self.root.update()
             
@@ -218,10 +252,10 @@ class CourseRecommenderGUI:
                 self.results_text.insert(tk.END, "\n")
         
         # Configure tags for styling
-        self.results_text.tag_config("course_id", font=("Arial", 12, "bold"), foreground="#2196F3")
-        self.results_text.tag_config("similarity", font=("Arial", 10), foreground="#FF9800")
-        self.results_text.tag_config("description", font=("Arial", 10), foreground="#333")
-        self.results_text.tag_config("prerequisite", font=("Arial", 10, "italic"), foreground="#666")
+        self.results_text.tag_config("course_id", font=("Arial", 12, "bold"), foreground=LINK_COLOR)
+        self.results_text.tag_config("similarity", font=("Arial", 10), foreground=ACCENT_COLOR)
+        self.results_text.tag_config("description", font=("Arial", 10), foreground=TEXT_COLOR)
+        self.results_text.tag_config("prerequisite", font=("Arial", 10, "italic"), foreground=SECONDARY_TEXT)
         
         self.results_text.config(state=tk.DISABLED)
 
